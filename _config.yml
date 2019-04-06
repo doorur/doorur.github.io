@@ -71,7 +71,7 @@ netease_comment: true
 # ba_track_id: [your track id]
 
 # Google Analytics
-ga_track_id: 'UA-131022145-1'            # Format: UA-xxxxxx-xx
+ga_track_id: 'UA-137801386-1'            # Format: UA-xxxxxx-xx
 ga_domain: doorur.github.io
 
 
