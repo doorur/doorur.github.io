@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Doorur">
+    <meta name="keywords"  content="doorur, programming">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="스프링 프레임워크의 IoC 컨테이너 - doorur's programming note">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="1. IoC 컨테이너와 Bean
+스프링에서는 의존성을 주입받아 사용할 수 있습니다. 한 객체에서 사용하는 의존을 객체 자체가 결정하는게 아니라 객체 바깥에서 결정되기 때문에 제어의 역전(Inversion of Control)이라고 불리고, IoC라는 용어로 사용되고 있습니다.
+
+">
+    
+    <meta property="article:published_time" content="2019-04-07T00:00:00Z">
+    
+    
+    <meta property="article:author" content="doorur">
+    
+    
+    <meta property="article:tag" content="스프링">
+    
+    
+    <meta property="og:image" content="http://localhost:4000/img/avatar-swja.jpg">
+    <meta property="og:url" content="http://localhost:4000/2019/04/07/spring-ioc/">
+    <meta property="og:site_name" content="doorur's programming note">
+    
+    <title>스프링 프레임워크의 IoC 컨테이너 - doorur's programming note</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2019/04/07/spring-ioc/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Note</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        <a href="/archive/">Archive</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/in-post/spring.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=%EC%8A%A4%ED%94%84%EB%A7%81" title="스프링">스프링</a>
+                        
+                    </div>
+                    <h1>스프링 프레임워크의 IoC 컨테이너</h1>
+                    
+                    <h2 class="subheading">빈을 등록하는 다섯가지 방법</h2>
+                    <span class="meta">Posted by doorur on April 7, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h3 id="1-ioc-컨테이너와-bean">1. IoC 컨테이너와 Bean</h3>
+<p>스프링에서는 의존성을 주입받아 사용할 수 있습니다. 한 객체에서 사용하는 의존을 객체 자체가 결정하는게 아니라 객체 바깥에서 결정되기 때문에 제어의 역전(Inversion of Control)이라고 불리고, IoC라는 용어로 사용되고 있습니다.</p>
+
+<p>여기서 말하는 의존이란 한 객체가 동작하기 위해 필요한 어떤 것입니다. 예를 들어 다음과 같은 코드가 있다면 BookService 객체는 BookRepository라는 객체가 있어야 동작할 수 있고, BookRepository에 변경이 일어난다면 BookService 객체의 동작에도 변경이 일어나겠죠. 이때 BookService가 BookeRepository에 의존성을 가지고있다고 말합니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BookService</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="n">BookRepository</span> <span class="n">bookRepository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BookRepository</span><span class="o">();</span>
+
+	<span class="kd">public</span> <span class="n">Book</span> <span class="nf">saveBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// bookRepository.save()의 동작에 변경이 있다면 이 메소드의 동작도 변경됩니다.</span>
+		<span class="k">return</span> <span class="n">bookRepository</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>스프링 프레임워크는 IoC 컨테이너를 제공해서 컨테이너 안에 Bean들을 담아두었다가 필요한 곳에 주입시켜줄 수 있습니다. 그래서 다음과 같은 코드가 가능해집니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BookService</span> <span class="o">{</span>
+	<span class="nd">@Autowired</span>
+	<span class="kd">private</span> <span class="n">BookRepository</span> <span class="n">bookRepository</span><span class="o">;</span>
+
+	<span class="kd">public</span> <span class="n">Book</span> <span class="nf">saveBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">bookRepository</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>BookService 객체 안에서 new로 BookRepository 객체를 생성하지 않아도 BookService는 IoC컨테이너에 등록되어 있는 BookRepository 빈을 주입받아 사용할 수 있게 됩니다.</p>
+
+<h3 id="2-applicationcontext">2. ApplicationContext</h3>
+<p>스프링에서 제공하는 IoC 컨테이너의 구현체는 ApplicationContext 인터페이스를 구현하고 있습니다. 또 ApplicationContext 인터페이스는 BeanFactory 인터페이스를 상속받고 있기 때문에 BeanFactory 인터페이스의 메소드인 getBean 통해서 IoC 컨테이너에 등록된 빈을 꺼내와 사용할 수도 있습니다. 이때 파라미터로 넘겨주는 값은 빈의 ID입니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="n">ApplicationContext</span> <span class="n">applicationContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AnnotationConfigApplicationContext</span><span class="o">(</span><span class="n">ApplicationConfig</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+	
+<span class="n">BookRepository</span> <span class="n">bookRepository</span> <span class="o">=</span> <span class="o">(</span><span class="n">BookRepository</span><span class="o">)</span><span class="n">applicationContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"bookRepository"</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="3-bean을-설정하는-다양한-방법">3. Bean을 설정하는 다양한 방법</h3>
+
+<blockquote>
+  <p>여기서 설명하는 다섯가지 방법은 <a href="https://github.com/doorur/spring-framework-core/commits/master">깃허브</a>에서 각각 커밋으로 코드를 확인할 수 있습니다.</p>
+</blockquote>
+
+<p>스프링은 2003년도에 처음 등장하면서 많은 개발자들이 사용해왔고 사용자들의 요구에 따라 여러 부분을 개선했습니다. IoC에 Bean을 등록하는 방법도 여러가지가 있는데 어떻게 발전해 왔는지 다섯 가지 방법을 알아보겠습니다.</p>
+
+<h4 id="첫번째-xml-config-파일에-빈-등록하기">첫번째. xml config 파일에 빈 등록하기</h4>
+<p>xml config 파일에 프로젝트에서 사용할 모든 빈의 목록을 나열해주면 스프링 프레임워크가 이 xml 파일을 읽어서 IoC 컨테이너에 등록하는 방식입니다. 프로젝트가 커지면 커질 수록 등록해야할 빈도 많아져서 파일도 커지고 번거롭습니다.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"bookService"</span> <span class="na">class=</span><span class="s">"me.doorur.springapplicationcontext.BookService"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"bookRepository"</span> <span class="na">ref=</span><span class="s">"bookRepository"</span><span class="nt">/&gt;</span>
+		  -- 여기서 name은 bookService에 있는 setter명
+	  	  -- ref는 bookRepository의 beanId를 말한다
+    <span class="nt">&lt;/bean&gt;</span>
+
+    <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"bookRepository"</span> <span class="na">class=</span><span class="s">"me.doorur.springapplicationcontext.BookRepository"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/beans&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="두번째-xml-config-파일을-이용해-컴포넌트-스캔하기">두번째. xml config 파일을 이용해 컴포넌트 스캔하기</h4>
+<p>xml config 파일에 빈을 일일히 선언해주지 않고 각 객체에 @Component 어노테이션을 달아두면 어플리케이션이 로딩될 때 어노테이션을 단 객체를 빈으로 등록해주는 방법입니다. @Service, @Repository, @Controller 어노테이션은 각각 @Component 어노테이션을 상속받은 어노테이션이기 때문에 상기 어노테이션을 써도 컴포넌트 스캔할 때 빈으로 등록됩니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">bookService</span> <span class="o">{</span>
+	<span class="o">...</span>
+<span class="o">}</span>
+
+<span class="o">...</span> 
+<span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">bookRepository</span> <span class="o">{</span>
+	<span class="o">...</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">"com.doorur.springdemo"</span><span class="nt">/&gt;</span>
+	  -- base-package에 명시해준 패키지 밑에 있는 모든 파일을 훑어 @Component가 있는 객체를 빈으로 등록합니다
+
+<span class="nt">&lt;/beans&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>이 방법은 빈을 일일히 등록해주지 않아도 되서 간편하지만 여전히 xml config 파일을 사용하는 방법입니다.</p>
+
+<h4 id="세번째-java-config를-이용해서-빈-등록하기">세번째. java config를 이용해서 빈 등록하기</h4>
+<p>xml config 파일을 사용하지 않고도 빈을 등록할 수 있습니다. @Configuration 어노테이션을 사용해서 자바 코드로 빈을 등록하는 방법입니다. 코드이기 때문에 IoC 컨테이너에 등록하기 전에 객체에 조작을 할 수 있어서 xml config 방식으로 빈을 등록하는 것보다 유연합니다.</p>
+
+<p>컴포넌트 스캔을 하지 않기 때문에 빈으로 등록할 객체에 @Component 어노테이션을 달아주지 않아도 됩니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApplicationConfig</span> <span class="o">{</span>
+	<span class="nd">@Bean</span>
+	<span class="kd">public</span> <span class="n">BookRepository</span> <span class="nf">bookRepository</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">BookRepository</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Bean</span>
+	<span class="kd">public</span> <span class="n">BookService</span> <span class="nf">bookService</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">BookService</span> <span class="n">bookService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BookService</span><span class="o">();</span>
+		<span class="c1">// 이렇게 빈으로 등록하기 전 객체에 조작을 가할 수 있습니다.</span>
+		<span class="n">bookService</span><span class="o">.</span><span class="na">setBookRepository</span><span class="o">(</span><span class="n">bookRepository</span><span class="o">());</span>
+
+		<span class="k">return</span> <span class="n">bookService</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>객체를 빈으로 등록할 때 위의 BookService의 예처럼 다른 빈을 의존성으로 가지고 있는 경우가 있습니다. 그럴 때는 위와 같이 직접 의존성의 메소드를 호출해서 사용할 수도 있고, 파라미터로 넘겨받을 수도 있습니다. 다음과 같이 파라미터에 선언을 해주면 알아서 주입받아 옵니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="n">BookService</span> <span class="nf">bookService</span><span class="o">(</span><span class="n">BookRepository</span> <span class="n">bookRepository</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">BookService</span> <span class="n">bookService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BookService</span><span class="o">();</span>
+	<span class="n">bookService</span><span class="o">.</span><span class="na">setBookRepository</span><span class="o">(</span><span class="n">bookRepository</span><span class="o">);</span>
+
+	<span class="k">return</span> <span class="n">bookService</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>이때 주의할 점은 IoC에 등록되어 있지 않은 객체는 파라미터로 주입받을 수 없다는 점입니다. 하지만 선언 순서는 중요하지 않으니 어디선가 빈으로 등록되어 있기만 하다면 사용할 수 있습니다. (bookService 등록 후에 bookRepository를 등록해도 동작합니다.)</p>
+
+<p>이 방법은 xml config 파일을 사용하지 않아도 되고 빈에 조작을 할 수 있어 유용하지만 여전히 빈을 일일히 등록해줘야 합니다. 번거롭죠.</p>
+
+<h4 id="네번째-java-config를-이용해서-컴포넌트-스캔하기">네번째. java config를 이용해서 컴포넌트 스캔하기</h4>
+<p>자바 코드에서도 빈을 일일히 등록하지 않고 컴포넌트 스캔을 할 수 있습니다. @ComponentScan 어노테이션을 사용하면 @Component 어노테이션이 달린 객체들을 스캔해와서 빈으로 등록해 줍니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nd">@Configuration</span>
+<span class="nd">@ComponentScan</span><span class="o">(</span><span class="n">basePackages</span> <span class="o">=</span> <span class="s">"com.doorur.demo"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApplicationConfig</span> <span class="o">{</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>@Component 어노테이션을 달고 있는 클래스들을 스캔할 때는 @ComponentScan의 옵션인 basePackages에 정의 된 패키지를 기준으로 하위에 있는 클래스들을 탐색합니다. 컴포넌트를 선언한다고 해도 이 패키지 바깥에 있으면 빈으로 등록되지 않으니 이 부분을 주의해야 합니다.</p>
+
+<h4 id="다섯번째-springbootapplication-어노테이션-사용하기">다섯번째. @SpringBootApplication 어노테이션 사용하기</h4>
+<p>스프링 부트에서 제공하는 @SpringBootApplication은 @Configuration과 @ComponentScan을 포함하고 있습니다. 그래서 빈으로 등록하고자 하는 클래스에 @Component류의 어노테이션만 달아준다면 xml config 파일이나 java config 파일 없이도 IoC 컨테이너에 빈을 등록해서 사용할 수 있습니다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nd">@SpringBootApplication</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoApplication</span> <span class="o">{</span>
+
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="왜-ioc-컨테이너에-빈을-등록해서-사용해야-할까">왜 IoC 컨테이너에 빈을 등록해서 사용해야 할까?</h3>
+<p>그렇다면 객체들을 왜 자꾸 빈으로 만들어서 IoC 컨테이너에 등록해서 사용하는 걸까요? IoC 컨테이너에 등록하는 것에 여러가지 장점이 있습니다.</p>
+
+<p>가장 기본적인 이유는 변경에는 닫혀있고 확장에는 열려있는 구조를 위해서입니다. 객체지향의 5원칙(SOLID) 중에 하나인 OCP이죠. 의존성에 변경이 일어났을 때 그 객체를 사용하는 모든 부분을 수정하지 않고도 그 빈만 수정하면 됩니다. IoC로 관리하지 않았다면 객체를 new 해준 부분을 전부 수정해야합니다.</p>
+
+<p>이외에도 첫번째로 다른 빈에 주입하기 위해서입니다. 두번째로 다른 빈을 주입받기 위해서입니다. 세번째로 단위 테스트가 쉬운 코드를 만들기 위해서 입니다. 네번째로 객체를 여러개 생성할 필요 없이 한 인스턴스로만 사용하기 위해서 입니다. 다섯번째로 빈으로 등록되면 라이프사이클로 관리 되기 때문에 빈의 생성과 파괴 시점에 로직을 처리하기 용이하기 때문입니다. 기회가 된다면 이 이유들도 예제코드와 같이 블로깅 해보겠습니다.</p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/04/06/better-algorithm/" data-toggle="tooltip" data-placement="top" title="더 나은 알고리즘 풀이를 생각하기">
+                        Previous<br>
+                        <span>더 나은 알고리즘 풀이를 생각하기</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+                <!-- 网易云跟帖 评论框 start -->
+                <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+                <!-- 网易云跟帖 评论框 end -->
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+<!-- 网易云跟帖JS代码 start -->
+<script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+<script>
+  var cloudTieConfig = {
+    url: document.location.href, 
+    sourceId: "",
+    productKey: "de25fc98a6fe48b3bc8a7ae765da99a0",
+    target: "cloud-tie-wrapper"
+  };
+  var yunManualLoad = true;
+  Tie.loader("aHR0cHM6Ly9hcGkuZ2VudGllLjE2My5jb20vcGMvbGl2ZXNjcmlwdC5odG1s", true);
+</script>
+<!-- 网易云跟帖JS代码 end -->
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "doorur";
+    var disqus_identifier = "/2019/04/07/spring-ioc";
+    var disqus_url = "http://localhost:4000/2019/04/07/spring-ioc/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; Note 2019
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-137801386-1';
+    var _gaDomain = 'doorur.github.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+</body>
+
+</html>
