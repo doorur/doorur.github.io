@@ -62,14 +62,11 @@ kramdown:
 disqus_username: doorur
 
 # Netease settings
-netease_comment: true
+netease_comment: false
 
 
 
 # Analytics settings
-# Baidu Analytics 
-# ba_track_id: [your track id]
-
 # Google Analytics
 ga_track_id: 'UA-137801386-1'            # Format: UA-xxxxxx-xx
 ga_domain: doorur.github.io
