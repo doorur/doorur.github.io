@@ -11,27 +11,28 @@
     <meta name="theme-color" content="#000000">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Java의 매개변수 전달방식 - doorur's programming note">
+    <meta property="og:title" content="[프로그래머스] 124 나라의 숫자 - doorur's programming note">
     
     <meta property="og:type" content="article">
-    <meta property="og:description" content="Java는 매개 변수를 전달할 때 언제나 call-by-value 방식입니다. 변수를 넘길 때 변수의 주소값을 넘기는게 아니라 변수에 저장된 값을 복사해 메서드 안에서 사용합니다. 그래서 매개변수의 값은 메서드 안에서만 통용되는 local-variable 입니다.
+    <meta property="og:description" content="접근 방식
+먼저 124 나라의 숫자를 쭉 늘어놓고 패턴이 있는지 봤다.
 
 ">
     
-    <meta property="article:published_time" content="2019-04-27T00:00:00Z">
+    <meta property="article:published_time" content="2019-06-07T00:00:00Z">
     
     
     <meta property="article:author" content="doorur">
     
     
-    <meta property="article:tag" content="자바">
+    <meta property="article:tag" content="알고리즘">
     
     
     <meta property="og:image" content="http://localhost:4000/img/avatar-swja.jpg">
-    <meta property="og:url" content="http://localhost:4000/2019/04/27/call-by-value/">
+    <meta property="og:url" content="http://localhost:4000/2019/06/07/programmers-124/">
     <meta property="og:site_name" content="doorur's programming note">
     
-    <title>Java의 매개변수 전달방식 - doorur's programming note</title>
+    <title>[프로그래머스] 124 나라의 숫자 - doorur's programming note</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -40,7 +41,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2019/04/27/call-by-value/">
+    <link rel="canonical" href="http://localhost:4000/2019/06/07/programmers-124/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -175,7 +176,7 @@
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/in-post/call.jpg');
+        background-image: url('/img/in-post/124.jpg');
         background: ;
     }
 
@@ -192,13 +193,13 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/archive/?tag=%EC%9E%90%EB%B0%94" title="자바">자바</a>
+                        <a class="tag" href="/archive/?tag=%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98" title="알고리즘">알고리즘</a>
                         
                     </div>
-                    <h1>Java의 매개변수 전달방식</h1>
+                    <h1>[프로그래머스] 124 나라의 숫자</h1>
                     
-                    <h2 class="subheading">call-by-value</h2>
-                    <span class="meta">Posted by doorur on April 27, 2019</span>
+                    <h2 class="subheading">level5</h2>
+                    <span class="meta">Posted by doorur on June 7, 2019</span>
                 </div>
             </div>
         </div>
@@ -224,58 +225,39 @@
                 <!-- Multi-Lingual -->
                 
 
-				<p>Java는 매개 변수를 전달할 때 언제나 call-by-value 방식입니다. 변수를 넘길 때 변수의 주소값을 넘기는게 아니라 변수에 저장된 값을 복사해 메서드 안에서 사용합니다. 그래서 매개변수의 값은 메서드 안에서만 통용되는 local-variable 입니다.</p>
+				<h4 id="접근-방식">접근 방식</h4>
+<p>먼저 124 나라의 숫자를 쭉 늘어놓고 패턴이 있는지 봤다.</p>
 
-<p>간단한 예를 통해 확인해보겠습니다.</p>
+<p>1 -&gt; 1<br />
+2 -&gt; 2<br />
+3 -&gt; 4<br />
+5 -&gt; 11<br />
+6 -&gt; 12<br />
+7 -&gt; 14<br />
+8 -&gt; 21<br />
+9 -&gt; 22</p>
 
-<h3 id="primitive-type의-매개변수">primitive type의 매개변수</h3>
+<p>10진수가 1씩 늘어날 때는 124나라 숫자의 1의 자리가 변했고 3씩 늘어날 때는 2의 자리가 9씩 늘어날 때는 3의 자리가 변하는 것을 발견했다.</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-</pre></td><td class="rouge-code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BasicTest</span> <span class="o">{</span>
-    <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test1</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-
-        <span class="n">plusOne</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"plusOne 메소드 밖에서 a값 : "</span> <span class="o">+</span> <span class="n">a</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">plusOne</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"plusOne 메소드 안에서 a값 : "</span> <span class="o">+</span> <span class="n">a</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<p>실행 결과</p>
+<p>그러다가 124 나라의 수를 10진수로 바꾸는 규칙을 찾았다.</p>
 
 <blockquote>
-  <p>plusOne 메소드 안에서 a값 : 2<br />
-plusOne 메소드 밖에서 a값 : 1</p>
+  <p>3의 n-1승 * k 의 합 (n은 자리수, k = {1,2,3})</p>
 </blockquote>
 
-<p>plusOne 메소드의 매개변수 a에는 caller 메소드(test1)에서 넘긴 a의 값이 복사되어 담겨있을 뿐 입니다. 그래서 메소드 안에서 일어난 변경이 caller에는 전달되지 않습니다. 매개변수로 객체를 전달 받아도 같을까요?</p>
+<p>하지만 문제는 124나라의 수를 10진수로 변환하는게 아니라 10진수가 주어지면 124 나라의 수로 바꾸는 것이었다. 그러기 위해서 다음과 같은 전략을 짰다.</p>
 
-<h3 id="object-type의-매개변수">Object type의 매개변수</h3>
+<ol>
+  <li>124나라의 수로 바꿨을 때 몇 자리수가 될 것인지 찾는다</li>
+  <li>가장 높은 자리수 부터 하나씩 찾아간다</li>
+</ol>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+<p>124나라의 수로 바꿨을 때 몇 자리수가 될 것인지 알기 위해 각 자리수의 시작점을 배열에 넣어두고 값을 비교해가면서 자리수를 찾았다.</p>
+
+<p>자리수가 1인지 2인지 4인지 알기위해 썼던 방식은 전 탐색이었다. 이 자리수를 선택했을 때 남은 값들을 남은 자릿수로 표현할 수 있는지 없는지 확인해봤다.</p>
+
+<h4 id="코드">코드</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -302,47 +284,50 @@ plusOne 메소드 밖에서 a값 : 1</p>
 25
 26
 27
-</pre></td><td class="rouge-code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BasicTest</span> <span class="o">{</span>
-    <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test2</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">();</span>
-        <span class="n">book</span><span class="o">.</span><span class="na">setIsbn</span><span class="o">(</span><span class="mi">123</span><span class="o">);</span>
-        <span class="n">book</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">"abc"</span><span class="o">);</span>
+28
+29
+30
+31
+</pre></td><td class="rouge-code"><pre><span class="n">frontier</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span> <span class="o">**</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">18</span><span class="p">)]</span>
 
-        <span class="n">changeBook</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">18</span><span class="p">):</span>
+        <span class="n">frontier</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">frontier</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">frontier</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"changeBook 밖 : "</span> <span class="o">+</span> <span class="n">book</span><span class="o">);</span>
-    <span class="o">}</span>
+<span class="k">def</span> <span class="nf">solution</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="c1"># 자릿수를 찾는다
+</span>    <span class="c1"># 0,1,2 를 찾는다 다 1로 했을 때랑 다 3으로 했을 때 사이에 값이 있는가? 
+</span>    <span class="n">base</span> <span class="o">=</span> <span class="p">[</span><span class="s">'1'</span><span class="p">,</span><span class="s">'2'</span><span class="p">,</span><span class="s">'4'</span><span class="p">]</span>
 
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">changeBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Book</span> <span class="n">newBook</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">();</span>
-        <span class="n">newBook</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">"abc new"</span><span class="o">);</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">18</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">frontier</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+            <span class="k">break</span>
 
-        <span class="n">book</span> <span class="o">=</span> <span class="n">newBook</span><span class="o">;</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="s">''</span>
+    <span class="n">remain</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">remain</span> <span class="o">=</span> <span class="n">n</span><span class="o">-</span><span class="p">((</span><span class="mi">3</span><span class="o">**</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">m</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="n">remain</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="n">answer</span> <span class="o">+</span> <span class="n">base</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">remain</span> <span class="o">&gt;=</span> <span class="n">frontier</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">remain</span> <span class="o">&lt;</span> <span class="n">frontier</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="n">answer</span> <span class="o">+</span> <span class="n">base</span><span class="p">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">remain</span>
+                <span class="k">break</span>
 
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"changeBook 안 : "</span> <span class="o">+</span> <span class="n">book</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+    <span class="k">return</span> <span class="n">answer</span>
 
-<span class="nd">@Data</span>
-<span class="kd">class</span> <span class="nc">Book</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">isbn</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">title</span><span class="o">;</span>
-<span class="o">}</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
-<p>실행결과</p>
+<h4 id="더-나은-풀이">더 나은 풀이</h4>
+<p>124 나라의 수는 세개의 문자로 수를 나타내므로 3진수라고 볼 수 있다. 일의 자리 숫자는 1,2,4 중 하나일 것이고 이에 각각 대응되는 값은 10진수의 1,2,3 이다.</p>
 
-<blockquote>
-  <p>changeBook 안 : Book(isbn=0, title=abc new)<br />
-changeBook 밖 : Book(isbn=123, title=abc)</p>
-</blockquote>
+<p>그렇다면 n을 3으로 나눈 나머지가 일의 자리 숫자가 될텐데 124 나라의 경우에는 0의 개념이 없다. 나머지를 1,2,3으로 받기 위해 n에서 1을 빼고 3으로 나눈 뒤 나머지에 1을 더해주자. 그리고 이  작업을 자릿수를 옮겨가면서 반복하자.</p>
 
-<p>객체를 전달해도 메소드 밖에서 객체가 바뀌지 않는 걸 보니 call-by-value가 맞나봅니다. 그렇다면 메소드 안에서 객체의 상태를 바꿔도 변하지 않을까요?</p>
-
-<h3 id="object-type의-매개변수-상태-변경">Object type의 매개변수 상태 변경</h3>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+<h4 id="코드-1">코드</h4>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -351,73 +336,36 @@ changeBook 밖 : Book(isbn=123, title=abc)</p>
 7
 8
 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-</pre></td><td class="rouge-code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BasicTest</span> <span class="o">{</span>
-    <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">();</span>
-        <span class="n">book</span><span class="o">.</span><span class="na">setIsbn</span><span class="o">(</span><span class="mi">123</span><span class="o">);</span>
-        <span class="n">book</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">"abc"</span><span class="o">);</span>
-
-        <span class="n">editBook</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"editBook 밖 : "</span> <span class="o">+</span> <span class="n">book</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">editBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">book</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">"cdf"</span><span class="o">);</span>
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"editBook 안 : "</span> <span class="o">+</span> <span class="n">book</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">solution</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="s">''</span>
+    
+    <span class="k">while</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="s">'124'</span><span class="p">[</span><span class="n">n</span><span class="o">%</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">answer</span>
+        <span class="n">n</span> <span class="o">//=</span> <span class="mi">3</span>
+        
+    <span class="k">return</span> <span class="n">answer</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
-<p>실행결과</p>
-
-<blockquote>
-  <p>editBook 안 : Book(isbn=123, title=cdf)<br />
-editBook 밖 : Book(isbn=123, title=cdf)</p>
-</blockquote>
-
-<p>아니 이럴수가 있나요? 분명 메소드의 매개변수 값은 call-by-value로 전달해서 지역적으로 사용될텐데 왜 메소드 안에서 수정한 결과가 메소드 바깥에도 반영되는 걸까요? 이거 정말 call-by-value로 전달되는게 맞습니까?</p>
-
-<p>결과적으로 말하면 Java에서 매개변수 전달방식은 언제나 call-by-value가 맞습니다. 마지막 예제가 call-by-reference 처럼 보이는 것은 객체 변수가 저장하고 있는 값이 reference 이기 때문입니다.</p>
-
-<h3 id="변수에-저장되는-값">변수에 저장되는 값</h3>
-<p>자바에서 primitive type의 변수에 저장되는 값은 value 자체입니다. 반면에 Object type의 변수에 저장되는 값은 그 객체가 저장되어 있는 곳의 주소 즉, reference 입니다.</p>
-
-<p>그래서 primitive type의 매개변수를 전달할 때는 primitive type 변수가 가지고 있는 값인 value 값 자체가 복사되고 Object type의 매개변수를 전달할 때는 Object type 변수가 가지고 있는 value 값 즉, reference가 복사되어 전달되는 것입니다.</p>
-
-<p>두 번째 예제의 경우에는 매개변수로 넘겨받은 값(book)에 새로운 객체(newBook)를 할당했으니 매개변수 값(book)에 새로운 객체의 reference 값(newBook의 주소)이 저장됩니다. caller에서 넘겨준 원 객체에 대한 참조는 새로운 객체로 덮어씌워질 뿐 원객체에 대한 변경은 일어나지 않는 것입니다.</p>
-
-<p>세 번째 예제의 경우에는 매개변수로 넘겨받은 변수 book은 원래 book 객체가 가지고 있는 값인 book값의 주소가 복사되어 담겨있습니다. 그래서 book을 참조로 객체의 상태를 수정하면 원객체의 값이 수정되는 것입니다.</p>
+<h4 id="4l-회고">4L 회고</h4>
+<ul>
+  <li>Liked : 공식 없이 진법에 대해 생각해본 것</li>
+  <li>Learned : 진법 변환의 원리, 파이썬 str 접근 방식 (문법)</li>
+  <li>Lacked : 잘못된 접근 방법을 버리지 않고 떠오르는대로 구현함</li>
+  <li>Longed for : 세상은 넓고 깔끔한 코드는 많다 다른 사람 풀이를 자주 보자</li>
+</ul>
 
 
                 <hr style="visibility: hidden;">
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2019/04/07/spring-ioc/" data-toggle="tooltip" data-placement="top" title="스프링 프레임워크의 IoC 컨테이너">
+                        <a href="/2019/04/27/call-by-value/" data-toggle="tooltip" data-placement="top" title="Java의 매개변수 전달방식">
                         Previous<br>
-                        <span>스프링 프레임워크의 IoC 컨테이너</span>
+                        <span>Java의 매개변수 전달방식</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2019/06/07/programmers-124/" data-toggle="tooltip" data-placement="top" title="[프로그래머스] 124 나라의 숫자">
-                        Next<br>
-                        <span>[프로그래머스] 124 나라의 숫자</span>
-                        </a>
-                    </li>
                     
                 </ul>
                 <hr style="visibility: hidden;">
@@ -498,8 +446,8 @@ editBook 밖 : Book(isbn=123, title=cdf)</p>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "doorur";
-    var disqus_identifier = "/2019/04/27/call-by-value";
-    var disqus_url = "http://localhost:4000/2019/04/27/call-by-value/";
+    var disqus_identifier = "/2019/06/07/programmers-124";
+    var disqus_url = "http://localhost:4000/2019/06/07/programmers-124/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
